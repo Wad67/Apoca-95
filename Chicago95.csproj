@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>Chicago95</AssemblyName>
+    <RootNamespace>Chicago95</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <!-- compile against the game's own BCL: newer overloads throw MissingMethodException at runtime -->
+    <NoStdLib>true</NoStdLib>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <GameDir Condition="'$(GameDir)' == ''">$(MSBuildProjectDirectory)/..</GameDir>
+    <ManagedDir>$(GameDir)/Apocalypter_Data/Managed</ManagedDir>
+    <BepInExCore>$(GameDir)/BepInEx/core</BepInExCore>
+    <Plugins>$(GameDir)/BepInEx/plugins</Plugins>
+    <DeployDir>$(Plugins)/Apoca-95</DeployDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib"><HintPath>$(ManagedDir)/mscorlib.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="System"><HintPath>$(ManagedDir)/System.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="System.Core"><HintPath>$(ManagedDir)/System.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="netstandard"><HintPath>$(ManagedDir)/netstandard.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx"><HintPath>$(BepInExCore)/BepInEx.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(BepInExCore)/0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(ManagedDir)/UnityEngine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(ManagedDir)/UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(ManagedDir)/UnityEngine.TextRenderingModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UI"><HintPath>$(ManagedDir)/UnityEngine.UI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.UIModule"><HintPath>$(ManagedDir)/UnityEngine.UIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="PlayMaker"><HintPath>$(ManagedDir)/PlayMaker.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(ManagedDir)/UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(ManagedDir)/UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(ManagedDir)/Assembly-CSharp-firstpass.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Assembly-CSharp"><HintPath>$(ManagedDir)/Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MapMagic"><HintPath>$(ManagedDir)/MapMagic.dll</HintPath><Private>false</Private></Reference>
+    <!-- the mods it patches, as installed (never copied or changed) -->
+    <Reference Include="WildWasteland"><HintPath>lib/WildWasteland.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Apocasetter"><HintPath>lib/Apocasetter.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- the desktop's bitmap font, baked by tools/make_font.py -->
+    <EmbeddedResource Include="fonts/*.png;fonts/*.txt" LogicalName="Chicago95.fonts.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <Target Name="DeployToGame" AfterTargets="Build">
+    <Copy SourceFiles="$(OutDir)$(AssemblyName).dll" DestinationFolder="$(DeployDir)" />
+    <Message Importance="high" Text="Deployed $(AssemblyName).dll to $(DeployDir)" />
+  </Target>
+</Project>
