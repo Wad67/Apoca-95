@@ -13,6 +13,8 @@ namespace Chicago95
     // label are hidden and the tip shown here, and its autosave screen opens the dialog for saving (WwLoading). In it:
     //  - what is loading and a block progress bar: the game's load stages up to the terrain, then MapMagic's own
     //    generation progress over all its tiles; saving has no measure, so a run of blocks moves along the bar;
+    //  - the details (LoadingInfo): the save file Easy Save is reading, how many keys it has read and which one now;
+    //    the terrain's tiles as a grid (waiting, generating as far as it has got, draft applied, finished);
     //  - a console (More Perfect DOS VGA): this machine's processor, memory and graphics card and every plugin loaded,
     //    then what is actually happening: each BepInEx log line as it is written (warnings yellow, errors red), the
     //    game's load states and the scenes it loads;
@@ -102,6 +104,7 @@ namespace Chicago95
             _tip = tip ?? "";
             _lines.Clear();
             Listener.Take();   // what was logged before this load is not part of it
+            LoadingInfo.Reset();
             Post();
             _active = true;
         }
@@ -132,6 +135,7 @@ namespace Chicago95
         {
             if (!_active) return;
             foreach (var l in Listener.Take()) _lines.Add(l);
+            foreach (var e in LoadingInfo.TakeEvents()) Add(e, Bright);
             while (_lines.Count > 200) _lines.RemoveAt(0);
             if (completed) _progress = 1f;
             else if (!_saving)
@@ -194,7 +198,8 @@ namespace Chicago95
             float consoleH = ConsoleLines * dos.LineHeight + 8;
             var tipLines = string.IsNullOrEmpty(_tip) ? 0 : Ui.Font(false).Wrap(_tip, (int)(W - 44)).Count;
             float tipH = string.IsNullOrEmpty(_tip) ? 0 : 26 + tipLines * Ui.Line + 8;
-            float H = 29 + 18 + 22 + 10 + consoleH + (tipH > 0 ? 10 + tipH : 0) + 10;
+            const float DetailsH = 74;
+            float H = 29 + 18 + 22 + 10 + (_saving ? 0 : DetailsH + 10) + consoleH + (tipH > 0 ? 10 + tipH : 0) + 10;
             float ox = Mathf.Round(Screen.width * .03f), oy = Mathf.Round((Screen.height - H * k) / 2f);
             Rect P(float x, float y, float w, float h) { return new Rect(ox + x * k, oy + y * k, w * k, h * k); }
 
@@ -220,6 +225,50 @@ namespace Chicago95
                 for (int i = 0; i < lit; i++) Win95.Fill(new Rect(bx + i * (bw + gap), bar.y + 3 * k, bw, bar.height - 6 * k), Win95.Navy);
             }
             y += 22 + 10;
+
+            // the details: the save being read, the terrain's tiles
+            if (!_saving)
+            {
+                Ui.Group(P(10, y, W - 20, DetailsH), "Details");
+                var tiles = LoadingInfo.Tiles(_mapMagic);
+                float gx = W - 20 - 8, cell = 9;
+                if (tiles.Count > 0)
+                {
+                    int minX = int.MaxValue, maxX = int.MinValue, minZ = int.MaxValue, maxZ = int.MinValue;
+                    foreach (var t in tiles) { minX = Mathf.Min(minX, t.X); maxX = Mathf.Max(maxX, t.X); minZ = Mathf.Min(minZ, t.Z); maxZ = Mathf.Max(maxZ, t.Z); }
+                    int across = maxX - minX + 1, down = maxZ - minZ + 1;
+                    cell = Mathf.Clamp(Mathf.Floor(50f / Mathf.Max(across, down)), 4, 12);
+                    gx = W - 10 - 10 - across * cell;
+                    float gy = y + 16;
+                    var frame = P(gx - 2, gy - 2, across * cell + 4, down * cell + 4);
+                    Win95.Fill(frame, Color.white); Ui.Sunken(frame);
+                    foreach (var t in tiles)
+                    {
+                        var c = P(gx + (t.X - minX) * cell, gy + (maxZ - t.Z) * cell, cell - 1, cell - 1);   // north up
+                        if (t.State == LoadingInfo.TileState.Main) Win95.Fill(c, Win95.Navy);
+                        else if (t.State == LoadingInfo.TileState.Draft) Win95.Fill(c, Win95.Hex("8080C0"));
+                        else if (t.State == LoadingInfo.TileState.Generating)
+                        {
+                            Win95.Fill(c, Win95.Face);
+                            float fh = Mathf.Round(c.height * t.Progress / k) * k;
+                            Win95.Fill(new Rect(c.x, c.yMax - fh, c.width, fh), Win95.Hex("008080"));
+                        }
+                        else Win95.Fill(c, Win95.Light);
+                    }
+                }
+                float tw = gx - 20 - 12;
+                string save = LoadingInfo.File == null ? "nothing read yet"
+                            : LoadingInfo.File + (LoadingInfo.FileBytes > 0 ? " (" + (LoadingInfo.FileBytes / 1024) + " kB)" : "") + ": " + LoadingInfo.Keys + " keys read";
+                Ui.Text(P(20, y + 16, 60, 16), "Save:", Color.black, TextAnchor.MiddleLeft, true);
+                Ui.Fit(P(80, y + 16, tw - 60, 16), save, Color.black);
+                if (!string.IsNullOrEmpty(LoadingInfo.LastKey)) Ui.Fit(P(80, y + 32, tw - 60, 16), "reading '" + LoadingInfo.LastKey + "'", Win95.Shadow);
+                int ready = 0, draft = 0, generating = 0;
+                foreach (var t in tiles) { if (t.State == LoadingInfo.TileState.Main) ready++; else if (t.State == LoadingInfo.TileState.Draft) draft++; else if (t.State == LoadingInfo.TileState.Generating) generating++; }
+                string terrain = tiles.Count == 0 ? "not started" : ready + " of " + tiles.Count + " tiles finished" + (draft > 0 ? ", " + draft + " drafted" : "") + (generating > 0 ? ", " + generating + " generating" : "");
+                Ui.Text(P(20, y + 50, 60, 16), "Terrain:", Color.black, TextAnchor.MiddleLeft, true);
+                Ui.Fit(P(80, y + 50, tw - 60, 16), terrain, Color.black);
+                y += DetailsH + 10;
+            }
 
             // the console: the newest lines that fit, cut to its width
             var console = P(10, y, W - 20, consoleH);

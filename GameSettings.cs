@@ -127,7 +127,7 @@ namespace Chicago95
     // the display: the game's Settings.xml (screenWidth, screenHeight, screenMode, qualityLevel)
     internal sealed class DisplaySettings
     {
-        public static readonly string[] ModeNames = { "Full screen", "Borderless", "Maximised", "Windowed" };
+        public static readonly string[] ModeNames = { "Exclusive full screen", "Borderless full screen", "Maximised window", "Windowed" };   // Unity's FullScreenMode, in its order
         public int W, H, Mode, Quality;
         public readonly List<Vector2Int> Res = new List<Vector2Int>();
         private static string Xml => Path.Combine(Application.persistentDataPath, "Settings.xml");

@@ -25,8 +25,11 @@ nothing when that mod isn't installed.
   the tab needs it). Click a key and press the new one; Backspace sets none, Esc cancels. Keys used twice are red,
   and choosing an action says what else uses its key.
 - **Loading.** A dialog over the loading screen: what is loading, a block progress bar (the game's load stages, then
-  the terrain generator's own progress), a DOS console with this machine, the loaded plugins and the log as it is
-  written, and a "Did you know..." tip when Wild Wasteland has one. Saving shows it too.
+  the terrain generator's own progress), the details (the save file Easy Save is reading, how many keys it has read
+  and which one now; the terrain's tiles as a grid: waiting, generating, drafted, finished), a DOS console with this
+  machine, the loaded plugins and the log as it is written (Easy Save's files and MapMagic's tiles included), and a
+  "Did you know..." tip when Wild Wasteland has one. Saving shows it too. It follows the game itself, so it works
+  without Wild Wasteland.
 - **Tab screen.** The player sheet as a window: equipment, the player's picture, ammunition, factions and warlords
   (their pictures change when they're killed), with the day and hour in the status bar. Read live from the game's
   own sheet.
@@ -63,6 +66,8 @@ Hints stay out of menus; notices show over them.
   files on tabbed pages, its drop-down lists as real drop-downs), its "Mods changed" / "N mod updates" notice as a
   window beside the title menu, and its Mods button.
 - **Apocasaver**: the save name prompt as a Save Game dialog. Enter is OK, Esc is Cancel.
+- **Apocaspawner**: its window at a whole-number scale, in the bitmap font, with a navy title bar, sunken panels,
+  raised buttons, sunken white fields and the theme's scrollbars.
 - **Wild Wasteland**: its windows (the F7 settings, which also open on a new game, and the patrol template menu and
   exporter) at a whole-number scale, so every line lands on a whole pixel, in the bitmap font, with Windows 95
   controls: the chosen one of a row of choices latched down, real check boxes and drop-down boxes, the theme's
@@ -87,11 +92,12 @@ restart.
 | `Patches.Apocasetter` | on | The Mods window, its notice and button. |
 | `Patches.WildWasteland` | on | Wild Wasteland's windows. |
 | `Patches.EngineSim` | on | Engine Sim's windows. |
+| `Patches.Apocaspawner` | on | Apocaspawner's window. |
 
 ## Requirements
 
 BepInEx 5. Everything else is optional: Wild Wasteland (0.1.11), Apocasetter (2.1.1), Apocasaver, Engine Sim,
-Apocapocket, Ultimate Tools, Burner's Utilities, Apocalypter Quests, Immersive Map and Apoc-Air are each patched
+Apocaspawner, Apocapocket, Ultimate Tools, Burner's Utilities, Apocalypter Quests, Immersive Map and Apoc-Air are each patched
 when they're there. Other versions of them may leave their patch off; the log says which, and the rest keeps working.
 
 ## Install
