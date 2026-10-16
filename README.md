@@ -76,6 +76,21 @@ Hints stay out of menus; notices show over them.
 - **Engine Sim**: the Engine Tuning Toolkit, the dyno and its notices in the bitmap font, with the theme's title
   bars.
 
+## The MS-DOS Prompt
+
+The backquote key (`` ` ``) opens an MS-DOS Prompt window: a black 80-column screen in the VGA font. Backquote or Esc
+closes it. While it is open the game keeps running, but its keys and mouse read as nothing, so typing doesn't walk
+or fire.
+
+- **The log**: BepInEx's warnings and errors as they come. `log all` shows everything, `log warn` goes back to
+  warnings and errors, `log off` shows none.
+- **Lua**: with SigmaMod 2.0, anything typed at `C:\APOCALYPTER>` runs as Lua in SigmaMod's console, one state for
+  the session; an expression prints its value. `clr.type`, `clr.objects`, `clr.find`, `clr.component`, `clr.new`,
+  `vec`, `print` and `log` reach the game's and mods' objects as they are, e.g.
+  `g = clr.objects("DcGenerator")[1]` then `g.LoadText`. Without SigmaMod it answers "Bad command or file name".
+- **Its own commands**: `cls`, `help`, `reset` (a fresh Lua state), `exit`.
+- Up and Down step through what was typed; Page Up and Page Down scroll.
+
 ## Settings
 
 In `BepInEx/config/com.burner.apocalypter.chicago95.cfg`, or in game through the Apocasetter Mods menu. Each needs a
@@ -93,12 +108,13 @@ restart.
 | `Patches.WildWasteland` | on | Wild Wasteland's windows. |
 | `Patches.EngineSim` | on | Engine Sim's windows. |
 | `Patches.Apocaspawner` | on | Apocaspawner's window. |
+| `Patches.Console` | on | The MS-DOS Prompt on the backquote key. Restart to apply. |
 
 ## Requirements
 
 BepInEx 5. Everything else is optional: Wild Wasteland (0.1.11), Apocasetter (2.1.1), Apocasaver, Engine Sim,
 Apocaspawner, Apocapocket, Ultimate Tools, Burner's Utilities, Apocalypter Quests, Immersive Map and Apoc-Air are each patched
-when they're there. Other versions of them may leave their patch off; the log says which, and the rest keeps working.
+when they're there. SigmaMod 2.0 gives the MS-DOS Prompt its Lua. Other versions of them may leave their patch off; the log says which, and the rest keeps working.
 
 ## Install
 

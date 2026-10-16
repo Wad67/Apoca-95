@@ -19,7 +19,7 @@ namespace Chicago95
     [BepInDependency(Apocaspawner, BepInDependency.DependencyFlags.SoftDependency)]
     public sealed class Plugin : BaseUnityPlugin
     {
-        public const string GUID = "com.burner.apocalypter.chicago95", NAME = "Apoca-95", VERSION = "1.1.0";
+        public const string GUID = "com.burner.apocalypter.chicago95", NAME = "Apoca-95", VERSION = "1.2.0";
         public const string WildWasteland = "com.denis.apocalypter.wildwasteland", Apocasetter = "com.denis.apocalypter.apocasetter", EngineSim = "com.burner.apocalypter.enginesim", Apocasaver = "com.denis.apocalypter.apocasaver", Apocaspawner = "com.denis.apocalypter.apocaspawner";
         internal static ManualLogSource Log;
         internal static GameObject Runner;
@@ -38,6 +38,7 @@ namespace Chicago95
             var notify = Config.Bind("Patches", "Notifications", true, "Every mod's HUD messages and hints as Windows tooltips in one place. Restart to apply.");
             var hud = Config.Bind("Patches", "Hud", true, "The HUD as a Windows 95 taskbar. Restart to apply.");
             var sheet = Config.Bind("Patches", "PlayerSheet", true, "The Tab screen as a Windows 95 window. Restart to apply.");
+            var prompt = Config.Bind("Patches", "Console", true, "An MS-DOS Prompt on the backquote key: the log, and Lua with SigmaMod. Restart to apply.");
 
             // the windows run on an object of their own that lasts the session: BepInEx's manager object, which carries
             // the plugin itself, can be gone soon after the game starts, and everything on it with it
@@ -66,6 +67,7 @@ namespace Chicago95
             if (pause.Value) Try("Pause menu", () => PauseMenu.Install(Runner));
             if (hud.Value) Try("HUD", () => HudBar.Install(Runner));
             if (sheet.Value) Try("Player sheet", () => PlayerSheet.Install(Runner));
+            if (prompt.Value) Try("Console", () => DosPrompt.Install(Runner, harmony));
             if (title.Value || pause.Value) Try("Wild Wasteland's menus standing down", () => TitleMenu.InstallStandDown(harmony));
         }
 
